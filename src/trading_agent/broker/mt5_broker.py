@@ -42,7 +42,11 @@ class MT5Broker(BrokerClient):
         entry_price: float,
         stop_loss: float,
         take_profit: float,
+        opened_at: datetime | None = None,
     ) -> Trade:
+        # `opened_at` is accepted for BrokerClient interface compatibility but
+        # ignored: a live broker's own reported fill time is authoritative,
+        # never a caller-supplied timestamp.
         order_type = mt5.ORDER_TYPE_BUY if direction is Direction.BUY else mt5.ORDER_TYPE_SELL
         request = {
             "action": mt5.TRADE_ACTION_DEAL,
@@ -82,7 +86,9 @@ class MT5Broker(BrokerClient):
         if result is None or result.retcode != mt5.TRADE_RETCODE_DONE:
             raise RuntimeError(f"Failed to modify stop loss for {trade_id}: {result}")
 
-    def close_trade(self, trade_id: str, exit_price: float) -> Trade:
+    def close_trade(self, trade_id: str, exit_price: float, closed_at: datetime | None = None) -> Trade:
+        # `closed_at` is accepted for BrokerClient interface compatibility but
+        # ignored, for the same reason as in `place_order`.
         position = self._get_position(trade_id)
         order_type = mt5.ORDER_TYPE_SELL if position.type == mt5.ORDER_TYPE_BUY else mt5.ORDER_TYPE_BUY
         request = {

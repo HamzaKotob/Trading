@@ -53,7 +53,7 @@ class BacktestEngine:
                 )
                 if hit_sl or hit_tp:
                     exit_price = trade.stop_loss if hit_sl else trade.take_profit
-                    closed = self._broker.close_trade(open_trade_id, exit_price)
+                    closed = self._broker.close_trade(open_trade_id, exit_price, closed_at=candle.time)
                     self._risk.register_trade_result(closed.pnl)
                     self._journal.record_trade(closed)
                     open_trade_id = None
@@ -72,7 +72,13 @@ class BacktestEngine:
                 setup.stop_loss,
             )
             trade = self._broker.place_order(
-                symbol, setup.direction, size, setup.entry_price, setup.stop_loss, setup.take_profit_1
+                symbol,
+                setup.direction,
+                size,
+                setup.entry_price,
+                setup.stop_loss,
+                setup.take_profit_1,
+                opened_at=candle.time,
             )
             self._journal.record_trade(trade)
             open_trade_id = trade.id

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from trading_agent.models import Direction, Trade
 
@@ -12,6 +13,11 @@ class BrokerClient(ABC):
     Order placement always takes an explicit, pre-approved size, entry,
     stop loss and take profit: sizing and risk approval happen upstream in
     the deterministic risk engine, never inside the broker client.
+
+    `opened_at`/`closed_at` default to the real current time (correct for
+    live/paper trading) but can be overridden with a simulated timestamp,
+    which a backtest must do to keep the journal's trade history aligned
+    with the historical data being replayed rather than wall-clock time.
     """
 
     @abstractmethod
@@ -27,6 +33,7 @@ class BrokerClient(ABC):
         entry_price: float,
         stop_loss: float,
         take_profit: float,
+        opened_at: datetime | None = None,
     ) -> Trade:
         ...
 
@@ -35,7 +42,7 @@ class BrokerClient(ABC):
         ...
 
     @abstractmethod
-    def close_trade(self, trade_id: str, exit_price: float) -> Trade:
+    def close_trade(self, trade_id: str, exit_price: float, closed_at: datetime | None = None) -> Trade:
         ...
 
     @abstractmethod
