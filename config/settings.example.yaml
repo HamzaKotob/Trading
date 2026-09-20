@@ -1,0 +1,18 @@
+account_balance: 10000
+symbols:
+  - EURUSD
+  - GBPUSD
+  - XAUUSD
+timeframes:
+  - D1
+  - H4
+  - H1
+  - M15
+min_confidence: 80
+news_lookahead_minutes: 30
+risk:
+  risk_per_trade_pct: 0.5
+  max_risk_per_trade_pct: 1.0
+  min_risk_reward: 2.0
+  max_daily_loss_pct: 2.0
+  max_weekly_loss_pct: 5.0
